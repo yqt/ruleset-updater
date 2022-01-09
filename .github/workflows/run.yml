@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir publish
           cp -r ${TMP_REPO_DIR}/Rulesets/Clash/* ./publish/
+          mv ./publish/App/social/Telegram.yaml ./publish/App/social/tg.yaml
           
       - name: Git push assets to "release" branch
         run: |
