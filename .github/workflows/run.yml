@@ -1,0 +1,48 @@
+name: Update Ruleset
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 22 * * *"
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - "**/README.md"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set variables
+        run: |
+          echo "RELEASE_NAME=Released on $(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+          echo "TAG_NAME=$(date +%Y%m%d%H%M)" >> $GITHUB_ENV
+          echo "SRC_REPO=https://github.com/Hackl0us/SS-Rule-Snippet.git" >> $GITHUB_ENV
+          echo "TMP_REPO_DIR=SS-Rule-Snippet" >> $GITHUB_ENV
+        shell: bash
+  
+      - name: Checkout the "hidden" branch
+        uses: actions/checkout@v2
+        with:
+          ref: hidden
+          
+      - name: Clone source repo
+        run: git clone ${SRC_REPO} ${TMP_REPO_DIR}
+        shell: bash
+        
+      - name: Move files to publish directory
+        run: |
+          mkdir publish
+          cp -r ${TMP_REPO_DIR}/Rulesets/Clash/* ./publish/
+          
+      - name: Git push assets to "release" branch
+        run: |
+          cd publish || exit 1
+          git init
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b release
+          git add .
+          git commit -m "${{ env.RELEASE_NAME }}"
+          git remote add origin "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}"
+          git push -f origin release
