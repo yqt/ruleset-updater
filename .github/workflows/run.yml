@@ -20,6 +20,11 @@ jobs:
           echo "SRC_REPO=https://github.com/Hackl0us/SS-Rule-Snippet.git" >> $GITHUB_ENV
           echo "TMP_REPO_DIR=SS-Rule-Snippet" >> $GITHUB_ENV
         shell: bash
+        
+      - name: Checkout the "vc" branch
+        uses: actions/checkout@v2
+        with:
+          ref: vc
           
       - name: Clone source repo
         run: git clone ${SRC_REPO} ${TMP_REPO_DIR}
@@ -30,6 +35,7 @@ jobs:
           mkdir publish
           cp -r ${TMP_REPO_DIR}/Rulesets/Clash/* ./publish/
           mv ./publish/App/social/Telegram.yaml ./publish/App/social/tg.yaml
+          cp vercel.json ./publish/
           
       - name: Git push assets to "release" branch
         run: |
