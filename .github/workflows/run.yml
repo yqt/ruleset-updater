@@ -22,7 +22,7 @@ jobs:
         shell: bash
         
       - name: Checkout the "vc" branch
-        uses: actions/checkout@v4.1.5
+        uses: actions/checkout@v4.1.7
         with:
           ref: vc
           
